@@ -14,8 +14,10 @@ namespace Microsoft.Azure.EventHubs.Tests
     {
         static TestUtility()
         {
-            var ehConnectionString = Environment.GetEnvironmentVariable(TestConstants.EventHubsConnectionStringEnvironmentVariableName);
-            var storageConnectionString = Environment.GetEnvironmentVariable(TestConstants.StorageConnectionStringEnvironmentVariableName);
+            var ehConnectionString = "Endpoint=sb://rofextsdev.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=rYStjoJe1Rq6jq15wYXkmJs1alOkf1/y7bWVXSpEqyg=";
+
+            var storageConnectionString =
+                "DefaultEndpointsProtocol=https;AccountName=rofextsdevstorage;AccountKey=PSLs4lxV6Qjto30oeCiJ1ojs8OJmDMi0YX7Y2IZX7mjYDMmJwPmqwiWKZnd4f0JLu+s1sDHRduup+vVy8aiPAw==;EndpointSuffix=core.windows.net";
 
             if (string.IsNullOrWhiteSpace(ehConnectionString))
             {
