@@ -105,8 +105,8 @@ namespace Microsoft.Azure.EventHubs.Processor
                 ProcessorEventSource.Log.PartitionPumpInfo(this.host.HostName, this.PartitionId, "Calling user-provided initial offset provider");
                 eventPosition = this.host.EventProcessorOptions.InitialOffsetProvider(this.PartitionId);
                 ProcessorEventSource.Log.PartitionPumpInfo(
-                    this.host.HostName, 
-                    this.PartitionId, 
+                    this.host.HostName,
+                    this.PartitionId,
                     $"Initial Position Provider. Offset:{eventPosition.Offset}, SequenceNumber:{eventPosition.SequenceNumber}, DateTime:{eventPosition.EnqueuedTimeUtc}");
             }
             else
@@ -114,7 +114,7 @@ namespace Microsoft.Azure.EventHubs.Processor
                 this.Offset = startingCheckpoint.Offset;
                 this.SequenceNumber = startingCheckpoint.SequenceNumber;
                 ProcessorEventSource.Log.PartitionPumpInfo(
-                    this.host.HostName, 
+                    this.host.HostName,
                     this.PartitionId, $"Retrieved starting offset/sequenceNumber: {this.Offset}/{this.SequenceNumber}");
                 eventPosition = EventPosition.FromOffset(this.Offset);
             }
@@ -132,7 +132,7 @@ namespace Microsoft.Azure.EventHubs.Processor
             // task runs, the fields in this object may have changed, but we should only write to store what the user
             // has directed us to write.
             Checkpoint capturedCheckpoint;
-            lock(this.ThisLock)
+            lock (this.ThisLock)
             {
                 capturedCheckpoint = new Checkpoint(this.PartitionId, this.Offset, this.SequenceNumber);
             }
@@ -157,7 +157,7 @@ namespace Microsoft.Azure.EventHubs.Processor
             // We have never seen this sequence number yet
             if (eventData.SystemProperties.SequenceNumber > this.SequenceNumber)
             {
-                throw new ArgumentOutOfRangeException("eventData.SystemProperties.SequenceNumber");
+                throw new ArgumentOutOfRangeException(nameof(eventData.SystemProperties.SequenceNumber));
             }
 
             return this.PersistCheckpointAsync(new Checkpoint(this.PartitionId, eventData.SystemProperties.Offset, eventData.SystemProperties.SequenceNumber));

@@ -69,7 +69,7 @@ namespace Microsoft.Azure.EventHubs.Processor
 
             // Set storage renew request options.
             // Lease renew calls shouldn't wait more than leaseRenewInterval
-            this.renewRequestOptions = new BlobRequestOptions()
+            this.renewRequestOptions = new BlobRequestOptions
             {
                 ServerTimeout = this.leaseRenewInterval,
                 MaximumExecutionTime = TimeSpan.FromMinutes(1)
@@ -77,9 +77,9 @@ namespace Microsoft.Azure.EventHubs.Processor
 
 #if NET461
             // Proxy enabled?
-            if (this.host.EventProcessorOptions != null && this.host.EventProcessorOptions.WebProxy != null)
+            if (host.EventProcessorOptions?.WebProxy != null)
             {
-                this.operationContext = new OperationContext()
+                this.operationContext = new OperationContext
                 {
                     Proxy = this.host.EventProcessorOptions.WebProxy
                 };
@@ -89,7 +89,7 @@ namespace Microsoft.Azure.EventHubs.Processor
             // Create storage client and configure max execution time.
             // Max execution time will apply to any storage calls except renew.
             var storageClient = this.cloudStorageAccount.CreateCloudBlobClient();
-            storageClient.DefaultRequestOptions = new BlobRequestOptions()
+            storageClient.DefaultRequestOptions = new BlobRequestOptions
             {
                 MaximumExecutionTime = AzureStorageCheckpointLeaseManager.storageMaximumExecutionTime
             };
@@ -143,12 +143,15 @@ namespace Microsoft.Azure.EventHubs.Processor
             return checkpoint;
         }
 
-        public async Task UpdateCheckpointAsync(Lease lease, Checkpoint checkpoint)
+        public Task UpdateCheckpointAsync(Lease lease, Checkpoint checkpoint)
         {
-            AzureBlobLease newLease = new AzureBlobLease((AzureBlobLease)lease);
-            newLease.Offset = checkpoint.Offset;
-            newLease.SequenceNumber = checkpoint.SequenceNumber;
-            await this.UpdateLeaseAsync(newLease).ConfigureAwait(false);
+            AzureBlobLease newLease = new AzureBlobLease((AzureBlobLease)lease)
+            {
+                Offset = checkpoint.Offset,
+                SequenceNumber = checkpoint.SequenceNumber
+            };
+
+            return this.UpdateLeaseAsync(newLease);
         }
 
         public Task DeleteCheckpointAsync(string partitionId)
@@ -481,10 +484,10 @@ namespace Microsoft.Azure.EventHubs.Processor
                 ProcessorEventSource.Log.AzureStorageManagerInfo(this.host.HostName, lease.PartitionId, $"Raw JSON uploading: {jsonToUpload}");
                 await leaseBlob.UploadTextAsync(
                     jsonToUpload,
-                    null,
-                    AccessCondition.GenerateLeaseCondition(token),
-                    null,
-                    this.operationContext).ConfigureAwait(false);
+                    encoding: null,
+                    accessCondition: AccessCondition.GenerateLeaseCondition(token),
+                    options: null,
+                    operationContext: this.operationContext).ConfigureAwait(false);
             }
             catch (StorageException se)
             {
@@ -499,7 +502,7 @@ namespace Microsoft.Azure.EventHubs.Processor
             string jsonLease = await blob.DownloadTextAsync().ConfigureAwait(false);
 
             ProcessorEventSource.Log.AzureStorageManagerInfo(this.host.HostName, partitionId, "Raw JSON downloaded: " + jsonLease);
-            AzureBlobLease rehydrated = (AzureBlobLease)JsonConvert.DeserializeObject(jsonLease, typeof(AzureBlobLease));
+            AzureBlobLease rehydrated = JsonConvert.DeserializeObject<AzureBlobLease>(jsonLease);
             AzureBlobLease blobLease = new AzureBlobLease(rehydrated, blob);
             return blobLease;
         }

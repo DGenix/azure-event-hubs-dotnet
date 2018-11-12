@@ -10,10 +10,10 @@ namespace Microsoft.Azure.EventHubs.Processor
     /// <summary>
     /// Represents a host for processing Event Hubs event data.
     /// </summary>
-    public sealed class EventProcessorHost
+    public sealed class EventProcessorHost : IEventProcessorHost
     {
         // A processor host will work on either the token provider or the connection string.
-        ITokenProvider tokenProvider;
+        readonly ITokenProvider tokenProvider;
         string eventHubConnectionString;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Microsoft.Azure.EventHubs.Processor
                 eventHubConnectionString,
                 storageConnectionString,
                 leaseContainerName,
-                null)
+                storageBlobPrefix: null)
         {
         }
 
@@ -298,7 +298,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <see cref="EventProcessorHost" /> object.</summary> 
         /// <value>The <see cref="PartitionManagerOptions" /> instance.</value>
         public PartitionManagerOptions PartitionManagerOptions { get; set; }
-        
+
         // All of these accessors are for internal use only.
         internal ICheckpointManager CheckpointManager { get; }
 
@@ -415,7 +415,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <returns></returns>
         public async Task UnregisterEventProcessorAsync() // throws InterruptedException, ExecutionException
         {
-            ProcessorEventSource.Log.EventProcessorHostCloseStart(this.HostName);    	
+            ProcessorEventSource.Log.EventProcessorHostCloseStart(this.HostName);
             try
             {
                 await this.PartitionManager.StopAsync().ConfigureAwait(false);
@@ -429,6 +429,19 @@ namespace Microsoft.Azure.EventHubs.Processor
             finally
             {
                 ProcessorEventSource.Log.EventProcessorHostCloseStop(this.HostName);
+            }
+        }
+
+        /// <summary>
+        ///     Delete All the leases associated to the event prcessor host
+        /// </summary>
+        /// <returns></returns>
+        public async Task DeleteLeasesAsync()
+        {
+            foreach (var leaseTask in this.LeaseManager.GetAllLeases())
+            {
+                var lease = await leaseTask.ConfigureAwait(false);
+                await this.LeaseManager.DeleteLeaseAsync(lease).ConfigureAwait(false);
             }
         }
 
@@ -462,10 +475,10 @@ namespace Microsoft.Azure.EventHubs.Processor
             else
             {
                 return EventHubClient.Create(
-                    this.EndpointAddress, 
-                    this.EventHubPath, 
-                    this.tokenProvider, 
-                    this.OperationTimeout, 
+                    this.EndpointAddress,
+                    this.EventHubPath,
+                    this.tokenProvider,
+                    this.OperationTimeout,
                     this.TransportType);
             }
         }

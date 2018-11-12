@@ -39,7 +39,7 @@ namespace Microsoft.Azure.EventHubs
         {
             return EventPosition.FromOffset(EndOfStream);
         }
-        
+
         /// <summary>
         /// Creates a position at the given offset.
         /// </summary>
@@ -53,7 +53,7 @@ namespace Microsoft.Azure.EventHubs
                 throw new ArgumentNullException(nameof(offset));
             }
 
-            return new EventPosition() { Offset = offset, IsInclusive = inclusive };
+            return new EventPosition { Offset = offset, IsInclusive = inclusive };
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Microsoft.Azure.EventHubs
         /// <returns>An <see cref="EventPosition"/> object.</returns>
         public static EventPosition FromSequenceNumber(long sequenceNumber, bool inclusive = false)
         {
-            return new EventPosition() { SequenceNumber = sequenceNumber, IsInclusive = inclusive };
+            return new EventPosition { SequenceNumber = sequenceNumber, IsInclusive = inclusive };
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Microsoft.Azure.EventHubs
         /// <returns>An <see cref="EventPosition"/> object.</returns>
         public static EventPosition FromEnqueuedTime(DateTime enqueuedTimeUtc)
         {
-            return new EventPosition() { EnqueuedTimeUtc = enqueuedTimeUtc };
+            return new EventPosition { EnqueuedTimeUtc = enqueuedTimeUtc };
         }
 
         /// <summary>
@@ -139,7 +139,6 @@ namespace Microsoft.Azure.EventHubs
 
             throw new ArgumentException("No starting position was set");
         }
-
 
         // This is equivalent to Microsoft.Azure.Amqp's internal API TimeStampEncoding.GetMilliseconds
         long TimeStampEncodingGetMilliseconds(DateTime value)

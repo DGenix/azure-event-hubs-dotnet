@@ -23,13 +23,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <para>InvokeProcessorAfterReceiveTimeout: false</para>
         /// </summary>
         /// <value>an EventProcessorOptions instance with all options set to the default values</value>
-        public static EventProcessorOptions DefaultOptions
-        {
-            get
-            {
-                return new EventProcessorOptions();
-            }
-        }
+        public static EventProcessorOptions DefaultOptions => new EventProcessorOptions();
 
         /// <summary>
         /// Creates a new <see cref="EventProcessorOptions"/> object.
