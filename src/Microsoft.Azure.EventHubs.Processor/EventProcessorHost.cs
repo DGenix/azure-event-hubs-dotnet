@@ -13,7 +13,7 @@ namespace Microsoft.Azure.EventHubs.Processor
     public sealed class EventProcessorHost
     {
         // A processor host will work on either the token provider or the connection string.
-        ITokenProvider tokenProvider;
+        readonly ITokenProvider tokenProvider;
         string eventHubConnectionString;
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <see cref="EventProcessorHost" /> object.</summary> 
         /// <value>The <see cref="PartitionManagerOptions" /> instance.</value>
         public PartitionManagerOptions PartitionManagerOptions { get; set; }
-        
+
         // All of these accessors are for internal use only.
         internal ICheckpointManager CheckpointManager { get; }
 
@@ -415,7 +415,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <returns></returns>
         public async Task UnregisterEventProcessorAsync() // throws InterruptedException, ExecutionException
         {
-            ProcessorEventSource.Log.EventProcessorHostCloseStart(this.HostName);    	
+            ProcessorEventSource.Log.EventProcessorHostCloseStart(this.HostName);
             try
             {
                 await this.PartitionManager.StopAsync().ConfigureAwait(false);
@@ -449,7 +449,7 @@ namespace Microsoft.Azure.EventHubs.Processor
                 prefix = "host";
             }
 
-            return prefix + "-" + Guid.NewGuid().ToString();
+            return prefix + "-" + Guid.NewGuid();
         }
 
         internal EventHubClient CreateEventHubClient()
@@ -459,15 +459,13 @@ namespace Microsoft.Azure.EventHubs.Processor
             {
                 return EventHubClient.CreateFromConnectionString(this.eventHubConnectionString);
             }
-            else
-            {
-                return EventHubClient.Create(
-                    this.EndpointAddress, 
-                    this.EventHubPath, 
-                    this.tokenProvider, 
-                    this.OperationTimeout, 
-                    this.TransportType);
-            }
+
+            return EventHubClient.Create(
+                this.EndpointAddress,
+                this.EventHubPath,
+                this.tokenProvider,
+                this.OperationTimeout,
+                this.TransportType);
         }
     }
 }

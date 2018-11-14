@@ -50,23 +50,13 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <summary>
         /// Gets the host owner for the partition.
         /// </summary>
-        public string Owner
-        {
-            get
-            {
-                return this.Lease.Owner;
-            }
-        }
+        public string Owner => this.Lease.Owner;
 
         /// <summary>
         /// Gets the approximate receiver runtime information for a logical partition of an Event Hub.
         /// To enable the setting, refer to <see cref="EventProcessorOptions.EnableReceiverRuntimeMetric"/>
         /// </summary>
-        public ReceiverRuntimeInformation RuntimeInformation
-        {
-            get;
-            private set;
-        }
+        public ReceiverRuntimeInformation RuntimeInformation { get; private set; }
 
         internal string Offset { get; set; }
 

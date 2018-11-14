@@ -23,13 +23,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// <para>InvokeProcessorAfterReceiveTimeout: false</para>
         /// </summary>
         /// <value>an EventProcessorOptions instance with all options set to the default values</value>
-        public static EventProcessorOptions DefaultOptions
-        {
-            get
-            {
-                return new EventProcessorOptions();
-            }
-        }
+        public static EventProcessorOptions DefaultOptions => new EventProcessorOptions();
 
         /// <summary>
         /// Creates a new <see cref="EventProcessorOptions"/> object.
@@ -67,11 +61,7 @@ namespace Microsoft.Azure.EventHubs.Processor
 
         /// <summary> Gets or sets a value indicating whether the runtime metric of a receiver is enabled. </summary>
         /// <value> true if a client wants to access <see cref="ReceiverRuntimeInformation"/> using <see cref="PartitionContext"/>.</value>
-        public bool EnableReceiverRuntimeMetric
-        {
-            get;
-            set;
-        }
+        public bool EnableReceiverRuntimeMetric { get; set; }
 
         /// <summary>
         /// Gets or sets the current prefetch count for the underlying client.
@@ -96,11 +86,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// Gets or sets the web proxy.
         /// A proxy is applicable only when transport type is set to AmqpWebSockets.
         /// </summary>
-        public IWebProxy WebProxy
-        {
-            get;
-            set;
-        }
+        public IWebProxy WebProxy { get; set; }
 
         internal void NotifyOfException(string hostname, string partitionId, Exception exception, string action)
         {

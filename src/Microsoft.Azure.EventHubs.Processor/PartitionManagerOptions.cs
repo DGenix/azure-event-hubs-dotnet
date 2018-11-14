@@ -21,10 +21,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// </summary>
         public TimeSpan RenewInterval
         {
-            get
-            {
-                return this.renewInterval;
-            }
+            get => this.renewInterval;
 
             set
             {
@@ -43,10 +40,7 @@ namespace Microsoft.Azure.EventHubs.Processor
         /// </summary>
         public TimeSpan LeaseDuration
         {
-            get
-            {
-                return this.leaseDuration;
-            }
+            get => this.leaseDuration;
 
             set
             {

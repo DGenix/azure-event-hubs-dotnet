@@ -39,16 +39,16 @@ namespace Microsoft.Azure.EventHubs.Processor
         public async Task OpenAsync()
         {
             this.PumpStatus = PartitionPumpStatus.Opening;
-
             this.cancellationTokenSource = new CancellationTokenSource();
-
             this.PartitionContext = new PartitionContext(
-                this.Host, 
-                this.Lease.PartitionId, 
-                this.Host.EventHubPath, 
-                this.Host.ConsumerGroupName, 
-                this.cancellationTokenSource.Token);
-            this.PartitionContext.Lease = this.Lease;
+                this.Host,
+                this.Lease.PartitionId,
+                this.Host.EventHubPath,
+                this.Host.ConsumerGroupName,
+                this.cancellationTokenSource.Token)
+            {
+                Lease = this.Lease
+            };
 
             if (this.PumpStatus == PartitionPumpStatus.Opening)
             {
@@ -82,13 +82,7 @@ namespace Microsoft.Azure.EventHubs.Processor
 
         protected internal PartitionPumpStatus PumpStatus { get; protected set; }
 
-        internal bool IsClosing
-        {
-            get
-            {
-                return (this.PumpStatus == PartitionPumpStatus.Closing || this.PumpStatus == PartitionPumpStatus.Closed);
-            }
-        }
+        internal bool IsClosing => (this.PumpStatus == PartitionPumpStatus.Closing || this.PumpStatus == PartitionPumpStatus.Closed);
 
         public async Task CloseAsync(CloseReason reason)
         {
@@ -152,10 +146,10 @@ namespace Microsoft.Azure.EventHubs.Processor
             using (await this.ProcessingAsyncLock.LockAsync().ConfigureAwait(false))
             {
                 ProcessorEventSource.Log.PartitionPumpInvokeProcessorEventsStart(this.Host.HostName,
-                    this.PartitionContext.PartitionId, events?.Count() ?? 0);
+                    this.PartitionContext.PartitionId, events.Count());
                 try
                 {
-                    EventData last = events?.LastOrDefault();
+                    EventData last = events.LastOrDefault();
                     if (last != null)
                     {
                         ProcessorEventSource.Log.PartitionPumpInfo(

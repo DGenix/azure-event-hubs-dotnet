@@ -160,21 +160,9 @@ namespace Microsoft.Azure.EventHubs.Processor
         //
         // Lease operations.
         //
-        public TimeSpan LeaseRenewInterval
-        {
-            get
-            {
-                return this.leaseRenewInterval;
-            }
-        }
+        public TimeSpan LeaseRenewInterval => this.leaseRenewInterval;
 
-        public TimeSpan LeaseDuration
-        {
-            get
-            {
-                return this.leaseDuration;
-            }
-        }
+        public TimeSpan LeaseDuration => this.leaseDuration;
 
         public Task<bool> LeaseStoreExistsAsync()
         {
